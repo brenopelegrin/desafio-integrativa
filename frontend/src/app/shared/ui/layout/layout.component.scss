@@ -137,6 +137,21 @@
     padding: 0 2rem;
     gap: 1.5rem;
 
+    .mobile-menu-btn {
+      display: none;
+      background: transparent;
+      border: none;
+      color: var(--text-color);
+      font-size: 1.25rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 6px;
+      
+      &:hover {
+        background-color: var(--surface-hover);
+      }
+    }
+
     h2 {
       margin: 0;
       font-size: 1.25rem;
@@ -177,6 +192,10 @@
   .main-content {
     .topbar {
       padding: 0 1rem;
+      
+      .mobile-menu-btn {
+        display: block;
+      }
     }
 
     .content-area {

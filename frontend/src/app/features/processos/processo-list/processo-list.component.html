@@ -54,6 +54,8 @@
             pTooltip="Visualizar"></p-button>
           <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" (onClick)="editProcesso(processo)"
             pTooltip="Editar"></p-button>
+          <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (onClick)="deleteProcesso(processo)"
+            pTooltip="Excluir"></p-button>
         </td>
         <td class="font-medium text-900">{{ processo.numeroProcesso }}</td>
         <td>{{ getTipoProcessoLabel(processo.tipoProcesso) }}</td>
@@ -96,3 +98,5 @@
     </div>
   </form>
 </p-dialog>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

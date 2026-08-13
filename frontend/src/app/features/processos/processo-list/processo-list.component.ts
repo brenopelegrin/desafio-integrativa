@@ -9,7 +9,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { TooltipModule } from 'primeng/tooltip';
 import { DialogModule } from 'primeng/dialog';
-import { MessageService } from 'primeng/api';
+import { MessageService, ConfirmationService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 import { ProcessosService } from '../../../core/services/processos.service';
 import { ProcessoDto } from '../../../core/models/responses';
@@ -19,7 +20,7 @@ import { StatusTagComponent } from '../../../shared/ui/status-tag/status-tag.com
 @Component({
   selector: 'app-processo-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, TableModule, ButtonModule, InputTextModule, SelectModule, TooltipModule, DialogModule, StatusTagComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TableModule, ButtonModule, InputTextModule, SelectModule, TooltipModule, DialogModule, ConfirmDialogModule, StatusTagComponent],
   templateUrl: './processo-list.component.html',
   styleUrl: './processo-list.component.scss'
 })
@@ -28,6 +29,7 @@ export class ProcessoListComponent implements OnInit {
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private messageService = inject(MessageService);
+  private confirmationService = inject(ConfirmationService);
   private destroyRef = inject(DestroyRef);
 
   @ViewChild('dt') dt!: Table;
@@ -35,6 +37,7 @@ export class ProcessoListComponent implements OnInit {
   processos: ProcessoDto[] = [];
   totalRecords: number = 0;
   loading: boolean = true;
+  StatusProcesso = StatusProcesso;
 
   // Filtros
   filterNumeroProcesso: string = '';
@@ -131,6 +134,33 @@ export class ProcessoListComponent implements OnInit {
       },
       error: () => {
         this.isSubmitting = false;
+      }
+    });
+  }
+
+  deleteProcesso(processo: ProcessoDto) {
+    if (processo.status === StatusProcesso.Ativo) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Ação não permitida',
+        detail: 'Apenas processos com status Arquivado ou Finalizado podem ser excluídos.'
+      });
+      return;
+    }
+
+    this.confirmationService.confirm({
+      header: 'Confirmar exclusão',
+      message: `Tem certeza que deseja excluir o processo ${processo.numeroProcesso}? Esta ação não pode ser desfeita.`,
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Excluir',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        this.processosService.delete(processo.id).subscribe({
+          next: () => {
+            this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Processo excluído com sucesso.' });
+          }
+        });
       }
     });
   }
