@@ -1,59 +1,48 @@
-# Frontend
+# ProcessoTop - Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.33.
+Este é o frontend do sistema ProcessoTop, responsável por toda a interface de gerenciamento de processos, andamentos e partes.
 
-## Development server
+## Tecnologias e Bibliotecas Usadas
 
-To start a local development server, run:
+- **Angular 20**: O framework usado, rodando com a abordagem de Standalone Components (sem NgModules).
+- **PrimeNG**: Biblioteca de componentes de UI.
+- **PrimeFlex**: Classes utilitárias de CSS no estilo do Tailwind.
+- **Angular Reactive Forms**: Usado para construir os formulários de cadastro e aplicar validações.
+- **RxJS**: Controle do fluxo das requisições para a API e reatividade de componentes.
 
-```bash
-ng serve
+## Estrutura de Diretórios
+
+O projeto foi organizado de forma modular, priorizando a divisão por contexto de negócio (Features) e separando os componentes que fazem lógica mais complexa dos componentes puramente visuais (Smart vs Dumb Components).
+
+```text
+src/app/
+├── core/         # Serviços - interceptor de errors global
+├── features/     # Páginas e fluxos principais
+│   ├── entidades-legais/
+│   └── processos/
+└── shared/       # Componentes simples e reutilizáveis
+    ├── components/         # Formulários, tags, botões, etc
+    └── ui/                 # Componentes de layout - menu, header, etc
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Como Rodar
 
-## Code scaffolding
+A maneira recomendada e mais fácil de rodar o projeto inteiro (banco de dados, API e frontend) é utilizando o Docker Compose. 
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+As instruções de como rodar com Docker estão no **[README principal](../README.md)**.
 
-```bash
-ng generate component component-name
-```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### Rodando o Frontend isoladamente (Node)
 
-```bash
-ng generate --help
-```
+Caso queira subir apenas a interface gráfica direto na sua máquina (sem Docker):
 
-## Building
+1. Dentro desta pasta `frontend`, instale as dependências:
+   ```bash
+   npm install
+   ```
+2. Inicie o servidor de desenvolvimento:
+   ```bash
+   npm start
+   ```
 
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+*(O servidor subirá em `http://localhost:4200` e tentará se comunicar com a API mapeada nas `environments`)*.
