@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/GerenciadorProcessos.Api/GerenciadorProcessos.Api.csproj" />
+    <Project Path="src/GerenciadorProcessos.Application/GerenciadorProcessos.Application.csproj" />
+    <Project Path="src/GerenciadorProcessos.Domain/GerenciadorProcessos.Domain.csproj" />
+    <Project Path="src/GerenciadorProcessos.Infrastructure/GerenciadorProcessos.Infrastructure.csproj" />
+    <Project Path="src/GerenciadorProcessos.Shared/GerenciadorProcessos.Shared.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/GerenciadorProcessos.Tests/GerenciadorProcessos.Tests.csproj" />
+  </Folder>
+</Solution>
