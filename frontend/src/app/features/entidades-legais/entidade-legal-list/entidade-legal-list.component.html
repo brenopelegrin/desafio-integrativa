@@ -1,0 +1,91 @@
+<div class="list-container">
+  <div
+    class="toolbar shadow-1 border-round p-3 mb-4 surface-card flex flex-column md:flex-row gap-3 justify-content-between align-items-center">
+    <div class="filters flex flex-wrap gap-3 align-items-center w-full md:w-auto">
+      <div class="flex align-items-center gap-2 w-full md:w-auto">
+        <i class="pi pi-search text-color-secondary"></i>
+        <input pInputText type="text" [(ngModel)]="filterDocumento" placeholder="Buscar por Documento"
+          (keydown.enter)="applyFilter(dt)" class="w-full md:w-20rem" />
+      </div>
+      <p-button label="Buscar" icon="pi pi-search" (onClick)="applyFilter(dt)" styleClass="w-full md:w-auto"></p-button>
+    </div>
+
+    <div class="actions w-full md:w-auto text-right">
+      <p-button label="Nova Entidade" icon="pi pi-plus" (onClick)="openNew()" styleClass="w-full md:w-auto"></p-button>
+    </div>
+  </div>
+
+  <p-table #dt [value]="entidades" [lazy]="true" (onLazyLoad)="loadEntidades($event)" dataKey="id" [paginator]="true"
+    [rows]="10" [totalRecords]="totalRecords" [loading]="loading" [rowsPerPageOptions]="[10, 25, 50]"
+    styleClass="p-datatable-sm p-datatable-gridlines shadow-1 border-round">
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 5rem" class="text-center">Ações</th>
+        <th>Nome / Razão Social</th>
+        <th>Tipo</th>
+        <th>Documento</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-entidade>
+      <tr>
+        <td class="text-center">
+          <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" (onClick)="editEntidade(entidade)"
+            pTooltip="Editar"></p-button>
+        </td>
+        <td class="font-medium text-900">{{ entidade.nome }}</td>
+        <td>{{ getTipoLabel(entidade.tipoEntidade) }}</td>
+        <td>
+          <div class="flex align-items-center gap-2">
+            <p-tag [value]="entidade.tipoEntidade === 'PessoaFisica' ? 'CPF' : 'CNPJ'" severity="secondary"></p-tag>
+            <span>{{ entidade.numeroDocumento }}</span>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="4" class="text-center p-5 text-color-secondary">
+          <i class="pi pi-users text-4xl mb-3 block"></i>
+          Nenhuma entidade legal encontrada.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<!-- dialog para criar/editar -->
+<p-dialog [header]="editMode ? 'Editar Entidade Legal' : 'Nova Entidade Legal'" [(visible)]="showDialog" [modal]="true"
+  [style]="{ width: '450px' }" styleClass="border-round shadow-4" (onHide)="closeDialog()">
+  <form [formGroup]="entidadeForm" (ngSubmit)="save()" class="p-fluid pt-3">
+    <div class="field mb-4">
+      <label class="font-medium text-900 block mb-2">Tipo <span class="text-red-500">*</span></label>
+      <p-select formControlName="tipoEntidade" [options]="tipoEntidadeOptions" appendTo="body"></p-select>
+    </div>
+
+    <div class="field mb-4">
+      <label for="doc" class="font-medium text-900 block mb-2">Documento (CPF/CNPJ) <span
+          class="text-red-500">*</span></label>
+      <input pInputText id="doc" formControlName="numeroDocumento"
+        [placeholder]="entidadeForm.get('tipoEntidade')?.value === 'PessoaFisica' ? '000.000.000-00' : '00.000.000/0000-00'" />
+      <small class="p-error block mt-1"
+        *ngIf="entidadeForm.get('numeroDocumento')?.hasError('invalidCpf') && entidadeForm.get('numeroDocumento')?.touched">
+        CPF Inválido
+      </small>
+      <small class="p-error block mt-1"
+        *ngIf="entidadeForm.get('numeroDocumento')?.hasError('invalidCnpj') && entidadeForm.get('numeroDocumento')?.touched">
+        CNPJ Inválido
+      </small>
+    </div>
+
+    <div class="field mb-4">
+      <label for="nome" class="font-medium text-900 block mb-2">Nome / Razão Social <span
+          class="text-red-500">*</span></label>
+      <input pInputText id="nome" formControlName="nome" placeholder="Nome completo ou Razão Social" />
+    </div>
+
+    <div class="flex justify-content-end gap-2 mt-5 pt-3 border-top-1 surface-border">
+      <p-button label="Cancelar" [text]="true" severity="secondary" (onClick)="closeDialog()"></p-button>
+      <p-button label="Salvar" type="submit" [disabled]="entidadeForm.invalid" [loading]="isSubmitting"></p-button>
+    </div>
+  </form>
+</p-dialog>

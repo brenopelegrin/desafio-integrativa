@@ -1,0 +1,98 @@
+<div class="list-container">
+  <div class="surface-card shadow-1 border-round p-4 mb-4">
+    <div class="flex flex-column md:flex-row justify-content-between align-items-start md:align-items-center mb-4">
+      <h2 class="m-0 text-xl font-medium text-900">Buscar Processos</h2>
+      <p-button label="Novo Processo" icon="pi pi-plus" (onClick)="goToNovoProcesso()"></p-button>
+    </div>
+
+    <div class="flex flex-column md:flex-row gap-3 align-items-center w-full">
+      <div class="flex align-items-center gap-2 w-full md:w-auto">
+        <i class="pi pi-hashtag text-color-secondary"></i>
+        <input pInputText type="text" [(ngModel)]="filterNumeroProcesso" placeholder="Nº Processo"
+          (keydown.enter)="applyFilters(dt)" class="w-full md:w-15rem" />
+      </div>
+
+      <div class="flex align-items-center gap-2 w-full md:w-auto">
+        <i class="pi pi-id-card text-color-secondary"></i>
+        <input pInputText type="text" [(ngModel)]="filterDocumento" placeholder="CPF/CNPJ Parte"
+          (keydown.enter)="applyFilters(dt)" class="w-full md:w-15rem" />
+      </div>
+
+      <div class="w-full md:w-15rem">
+        <p-select [options]="statusOptions" [(ngModel)]="filterStatus" placeholder="Status"
+          styleClass="w-full"></p-select>
+      </div>
+
+      <div class="flex gap-2 w-full md:w-auto ml-auto">
+        <p-button label="Buscar" icon="pi pi-search" (onClick)="applyFilters(dt)"></p-button>
+        <p-button icon="pi pi-filter-slash" severity="secondary"
+          (onClick)="filterNumeroProcesso=''; filterDocumento=''; filterStatus=undefined; applyFilters(dt)"
+          pTooltip="Limpar Filtros"></p-button>
+      </div>
+    </div>
+  </div>
+
+  <p-table #dt [value]="processos" [lazy]="true" (onLazyLoad)="loadProcessos($event)" dataKey="id"
+    [tableStyle]="{ 'min-width': '75rem' }" [paginator]="true" [rows]="10" [totalRecords]="totalRecords"
+    [loading]="loading" [rowsPerPageOptions]="[10, 25, 50]"
+    styleClass="p-datatable-sm p-datatable-gridlines shadow-1 border-round">
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 5rem" class="text-center">Ações</th>
+        <th>Nº Processo</th>
+        <th>Tipo</th>
+        <th>Assunto</th>
+        <th>Status</th>
+        <th>Data de Criação</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-processo>
+      <tr>
+        <td class="text-center flex gap-1 justify-content-center">
+          <p-button icon="pi pi-eye" [rounded]="true" [text]="true" (onClick)="viewDetail(processo)"
+            pTooltip="Visualizar"></p-button>
+          <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" (onClick)="editProcesso(processo)"
+            pTooltip="Editar"></p-button>
+        </td>
+        <td class="font-medium text-900">{{ processo.numeroProcesso }}</td>
+        <td>{{ getTipoProcessoLabel(processo.tipoProcesso) }}</td>
+        <td class="truncate" [title]="processo.assunto">{{ processo.assunto }}</td>
+        <td>
+          <app-status-tag [status]="processo.status"></app-status-tag>
+        </td>
+        <td>{{ processo.dataCriacao | date:'dd/MM/yyyy HH:mm' }}</td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="6" class="text-center p-5 text-color-secondary">
+          <i class="pi pi-inbox text-4xl mb-3 block"></i>
+          Nenhum processo encontrado com os filtros selecionados.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<!-- dialog para editar o processo-->
+<p-dialog header="Editar Processo" [(visible)]="showEditDialog" [modal]="true" [style]="{ width: '450px' }"
+  styleClass="border-round shadow-4">
+  <form [formGroup]="editForm" (ngSubmit)="saveEdit()" class="p-fluid pt-3">
+    <div class="field mb-4">
+      <label class="font-medium text-900 block mb-2">Status <span class="text-red-500">*</span></label>
+      <p-select formControlName="status" [options]="editStatusOptions" appendTo="body"></p-select>
+    </div>
+
+    <div class="field mb-4">
+      <label class="font-medium text-900 block mb-2">Assunto <span class="text-red-500">*</span></label>
+      <input pInputText formControlName="assunto" />
+    </div>
+
+    <div class="flex justify-content-end gap-2 pt-3 border-top-1 surface-border">
+      <p-button label="Cancelar" [text]="true" severity="secondary" (onClick)="showEditDialog = false"></p-button>
+      <p-button label="Salvar" type="submit" [disabled]="editForm.invalid" [loading]="isSubmitting"></p-button>
+    </div>
+  </form>
+</p-dialog>

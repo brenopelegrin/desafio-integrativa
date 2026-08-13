@@ -1,0 +1,49 @@
+.form-container {
+  max-width: 900px;
+  margin: 0 auto;
+
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+
+    h2 {
+      margin: 0;
+      color: var(--text-color);
+    }
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+
+    .col-full {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .nested-grid {
+    background-color: var(--surface-ground);
+    padding: 1.5rem;
+    border-radius: 6px;
+    border: 1px solid var(--surface-border);
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    label {
+      font-weight: 500;
+      color: var(--text-color-secondary);
+    }
+  }
+
+  .parte-item {
+    border: 1px solid var(--surface-border);
+    border-radius: 6px;
+  }
+}

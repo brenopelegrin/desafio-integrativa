@@ -1,0 +1,96 @@
+<div class="detail-container" *ngIf="processo">
+  <app-processo-header [processo]="processo" (editStatus)="openEditStatusDialog()"></app-processo-header>
+
+  <div class="flex flex-column gap-4">
+    <app-processo-details-card [processo]="processo" [isSavingAssunto]="isSavingAssunto"
+      (saveAssunto)="handleSaveAssunto($event)"></app-processo-details-card>
+
+    <div class="partes-section">
+      <app-processo-partes-card [partes]="processo.partes" (addParte)="openAddParteDialog()"
+        (removeParte)="removeParte($event)"></app-processo-partes-card>
+    </div>
+
+    <app-processo-andamentos-card [andamentos]="andamentos" [firstAndamento]="firstAndamento"
+      [rowsAndamento]="rowsAndamento" (addAndamento)="openAndamentoDialog()" (viewAndamento)="viewAndamento($event)"
+      (pageChange)="handlePageAndamento($event)"></app-processo-andamentos-card>
+  </div>
+</div>
+
+<!-- dialog para Add Andamento -->
+<p-dialog header="Novo Andamento" [(visible)]="showAndamentoDialog" [modal]="true" [style]="{ width: '450px' }"
+  styleClass="border-round shadow-4">
+  <form [formGroup]="andamentoForm" (ngSubmit)="submitAndamento()" class="p-fluid">
+    <div class="field mb-4 mt-3">
+      <label class="font-medium text-900 block mb-2">Data e Hora <span class="text-red-500">*</span></label>
+      <p-datepicker formControlName="dataAndamento" appendTo="body" dateFormat="dd/mm/yy" [showTime]="true"
+        [showOnFocus]="false" [showIcon]="true"></p-datepicker>
+    </div>
+
+    <div class="field mb-4">
+      <label for="desc" class="font-medium text-900 block mb-2">Descrição <span class="text-red-500">*</span></label>
+      <textarea pInputTextarea id="desc" formControlName="descricao" rows="4" style="resize: none;"
+        autofocus></textarea>
+    </div>
+
+    <div class="flex justify-content-end gap-2 pt-3 border-top-1 surface-border">
+      <p-button label="Cancelar" [text]="true" severity="secondary" (onClick)="showAndamentoDialog = false"></p-button>
+      <p-button label="Salvar" type="submit" [disabled]="andamentoForm.invalid"
+        [loading]="isSubmittingAndamento"></p-button>
+    </div>
+  </form>
+</p-dialog>
+
+<!-- dialog para visualizar o Andamento -->
+<p-dialog header="Detalhes do Andamento" [(visible)]="showViewAndamentoDialog" [modal]="true"
+  [style]="{ width: '500px' }" styleClass="border-round shadow-4">
+  <div *ngIf="selectedAndamento" class="p-3">
+    <div class="mb-4">
+      <span class="text-color-secondary text-sm block mb-1 font-medium">Data e Hora</span>
+      <strong class="text-900 text-lg">{{ selectedAndamento.data | date:'dd/MM/yyyy HH:mm' }}</strong>
+    </div>
+    <div>
+      <span class="text-color-secondary text-sm block mb-2 font-medium">Descrição Completa</span>
+      <div class="surface-ground p-3 border-round border-1 surface-border line-height-3 text-900"
+        style="word-break: break-word; white-space: pre-wrap; max-height: 300px; overflow-y: auto;">
+        {{ selectedAndamento.descricao }}
+      </div>
+    </div>
+  </div>
+  <div class="flex justify-content-end pt-3 mt-4 border-top-1 surface-border">
+    <p-button label="Fechar" [text]="true" (onClick)="showViewAndamentoDialog = false"></p-button>
+  </div>
+</p-dialog>
+
+<!-- dialog para Add Parte -->
+<p-dialog header="Adicionar Parte ao Processo" [(visible)]="showAddParteDialog" [modal]="true"
+  [style]="{ width: '700px' }" styleClass="border-round shadow-4" (onHide)="closeAddParteDialog()">
+  <div class="pt-3">
+    <app-parte-form [parteFormGroup]="parteForm"></app-parte-form>
+  </div>
+
+  <div class="flex justify-content-end gap-2 pt-4 mt-2 border-top-1 surface-border">
+    <p-button label="Cancelar" [text]="true" severity="secondary" (onClick)="closeAddParteDialog()"></p-button>
+    <p-button label="Adicionar Parte" (onClick)="submitParte()" [disabled]="parteForm.invalid"
+      [loading]="isSubmittingParte"></p-button>
+  </div>
+</p-dialog>
+
+<!-- dialog para editar status -->
+<p-dialog header="Editar Status" [(visible)]="showEditStatusDialog" [modal]="true" [style]="{ width: '400px' }"
+  styleClass="border-round shadow-4" (onHide)="closeEditStatusDialog()">
+  <form [formGroup]="statusForm" (ngSubmit)="submitStatus()" class="p-fluid pt-3">
+    <div class="field mb-4">
+      <label class="font-medium text-900 block mb-2">Status <span class="text-red-500">*</span></label>
+      <p-select formControlName="status" [options]="editStatusOptions" appendTo="body"
+        placeholder="Selecione o novo status"></p-select>
+    </div>
+
+    <div class="flex justify-content-end gap-2 mt-5 pt-3 border-top-1 surface-border">
+      <p-button label="Cancelar" [text]="true" severity="secondary" (onClick)="closeEditStatusDialog()"></p-button>
+      <p-button label="Salvar" type="submit" [disabled]="statusForm.invalid" [loading]="isSubmittingStatus"></p-button>
+    </div>
+  </form>
+</p-dialog>
+
+<!-- dialog de confirmacao de exclusao da Parte -->
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

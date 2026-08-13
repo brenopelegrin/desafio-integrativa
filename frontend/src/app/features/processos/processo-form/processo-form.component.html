@@ -1,0 +1,105 @@
+<div class="form-container">
+  <div class="header flex align-items-center mb-4">
+    <p-button icon="pi pi-arrow-left" [text]="true" routerLink="/processos" label="Voltar"
+      styleClass="mr-3 p-button-secondary"></p-button>
+    <h2 class="m-0 text-900 font-semibold text-2xl">Novo Processo</h2>
+  </div>
+
+  <p-card styleClass="shadow-1 border-round p-3">
+    <form [formGroup]="processoForm" (ngSubmit)="submit()">
+      <p-stepper [value]="1">
+        <p-step-list>
+          <p-step [value]="1">Dados Básicos</p-step>
+          <p-step [value]="2">Partes Envolvidas</p-step>
+        </p-step-list>
+
+        <p-step-panels>
+          <!-- passo 1: informações do processo -->
+          <p-step-panel [value]="1">
+            <ng-template pTemplate="content" let-activateCallback="activateCallback">
+              <div formGroupName="info" class="p-fluid grid formgrid mt-3">
+
+                <div class="field col-12 md:col-6">
+                  <label for="tipoProcesso" class="font-medium text-900 block mb-2">Tipo de Processo <span
+                      class="text-red-500">*</span></label>
+                  <p-select id="tipoProcesso" formControlName="tipoProcesso" [options]="tipoProcessoOptions"
+                    placeholder="Selecione"></p-select>
+                  <small class="p-error block mt-1"
+                    *ngIf="processoForm.get('info.tipoProcesso')?.invalid && processoForm.get('info.tipoProcesso')?.touched">
+                    Campo obrigatório
+                  </small>
+                </div>
+
+                <div class="field col-12 md:col-6">
+                  <label for="numeroProcesso" class="font-medium text-900 block mb-2">Número do Processo <span
+                      class="text-red-500">*</span></label>
+                  <input pInputText id="numeroProcesso" formControlName="numeroProcesso"
+                    placeholder="Ex: 1234567-89.2026.1.23.4567" />
+                  <small class="p-error block mt-1"
+                    *ngIf="processoForm.get('info.numeroProcesso')?.hasError('required') && processoForm.get('info.numeroProcesso')?.touched">
+                    Campo obrigatório
+                  </small>
+                  <small class="p-error block mt-1"
+                    *ngIf="processoForm.get('info.numeroProcesso')?.hasError('invalidCnj') && processoForm.get('info.numeroProcesso')?.touched">
+                    Formato CNJ inválido
+                  </small>
+                </div>
+
+                <div class="field col-12">
+                  <label for="assunto" class="font-medium text-900 block mb-2">Assunto <span
+                      class="text-red-500">*</span></label>
+                  <input pInputText id="assunto" formControlName="assunto"
+                    placeholder="Descreva o assunto principal do processo" />
+                </div>
+
+              </div>
+
+              <div class="flex justify-content-end mt-4 pt-4 border-top-1 surface-border">
+                <p-button label="Próximo" icon="pi pi-arrow-right" iconPos="right" (onClick)="activateCallback(2)"
+                  [disabled]="processoForm.get('info')?.invalid"></p-button>
+              </div>
+            </ng-template>
+          </p-step-panel>
+
+          <!-- passo 2: cadastrar as partes envolvidas -->
+          <p-step-panel [value]="2">
+            <ng-template pTemplate="content" let-activateCallback="activateCallback">
+
+              <div class="partes-section mt-3">
+                <div class="flex justify-content-between align-items-center mb-4 border-bottom-1 surface-border pb-3">
+                  <p class="m-0 text-color-secondary">É necessário pelo menos um Polo Ativo e um Polo Passivo.</p>
+                  <p-button label="Adicionar Parte" icon="pi pi-plus" (onClick)="addParte()" [outlined]="true"
+                    size="small"></p-button>
+                </div>
+
+                <small class="p-error block mb-4" *ngIf="processoForm.touched && !validatePartes()">
+                  <i class="pi pi-exclamation-circle mr-1"></i> Por favor, adicione pelo menos uma parte no Polo Ativo e
+                  uma no Polo Passivo.
+                </small>
+
+                <div formArrayName="partes" class="flex flex-column gap-3">
+                  <div *ngFor="let parte of partesFormArray.controls; let i=index"
+                    class="p-4 surface-ground border-round border-1 surface-border">
+                    <div class="flex justify-content-between align-items-center mb-3">
+                      <h4 class="m-0 text-primary">Parte {{ i + 1 }}</h4>
+                      <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger"
+                        (onClick)="removeParte(i)" pTooltip="Remover Parte"></p-button>
+                    </div>
+                    <app-parte-form [parteFormGroup]="getParteFormGroup(i)"></app-parte-form>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex justify-content-between mt-4 pt-4 border-top-1 surface-border">
+                <p-button label="Anterior" icon="pi pi-arrow-left" [text]="true" severity="secondary"
+                  (onClick)="activateCallback(1)"></p-button>
+                <p-button label="Finalizar Cadastro" icon="pi pi-check" type="submit"
+                  [disabled]="processoForm.invalid || !validatePartes()" [loading]="isSubmitting"></p-button>
+              </div>
+            </ng-template>
+          </p-step-panel>
+        </p-step-panels>
+      </p-stepper>
+    </form>
+  </p-card>
+</div>
